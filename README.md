@@ -1,1 +1,5 @@
-# s1155197473 shop 73
+# shop 73
+## s1155197473 LIAN Jialu
+## Phase 1
+- Build static web page framework
+- Using JavaScript to implement product classification
