@@ -1,5 +1,5 @@
 <?php
-include "dbconfig.php";
+include "../includes/dbconfig.php";
 
 if (isset($_POST['update'])) {
     // 获取表单数据
@@ -30,7 +30,7 @@ if (isset($_POST['update'])) {
         $imageSize = $_FILES['image']['size'];
 
         if (in_array($imageType, $allowedTypes) && $imageSize <= $allowedSize) {
-            $imagePath = 'uploads/' . basename($_FILES['image']['name']);
+            $imagePath = '../public_html/uploads/' . basename($_FILES['image']['name']);
             if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
                 // 文件上传成功
             } else {
@@ -39,6 +39,7 @@ if (isset($_POST['update'])) {
         } else {
             die('Unsupported file type or file is too large.');
         }
+        $imagePath = basename($_FILES['image']['name']);
     }
 
     // 构建SQL更新语句，如果有图片路径更新，则包含图片路径

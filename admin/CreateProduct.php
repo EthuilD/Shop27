@@ -1,6 +1,6 @@
 
 <?php
-include "dbconfig.php"; // 包含数据库配置文件
+include "../includes/dbconfig.php"; // 包含数据库配置文件
 // 查询所有类别
 $sql = "SELECT * FROM categories";
 $result = $conn->query($sql);
@@ -27,7 +27,7 @@ if (isset($_POST['create'])) {
         $imageSize = $_FILES['image']['size'];
 
         if (in_array($imageType, $allowedTypes) && $imageSize <= $allowedSize) {
-            $imagePath = 'uploads/' . basename($_FILES['image']['name']);
+            $imagePath = '../public_html/uploads/' . basename($_FILES['image']['name']);
             if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
                 // 文件上传成功
             } else {
@@ -36,6 +36,7 @@ if (isset($_POST['create'])) {
         } else {
             die('Unsupported file type or file is too large.');
         }
+        $imagePath = basename($_FILES['image']['name']);
     } else {
         $imagePath = ''; // 如果没有上传图片，设置为空字符串
     }

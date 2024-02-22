@@ -1,7 +1,6 @@
 <?php
-require 'dbconfig.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require '../includes/dbconfig.php';
+
 if (isset($_GET['id'])) {
     $pid = $_GET['id'];
 
@@ -26,12 +25,12 @@ if (isset($_GET['id'])) {
     if ($stmt->affected_rows > 0) {
         header('Location: AdminPanel.php'); // 重定向回首页
     } else {
-        echo "产品删除失败：" . $conn->error;
+        echo "Product deletion failed:" . $conn->error;
     }
 
     $stmt->close();
     $conn->close();
 } else {
-    die('未提供产品ID。');
+    die('No product ID provided.');
 }
 ?>
