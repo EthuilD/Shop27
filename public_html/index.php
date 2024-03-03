@@ -1,4 +1,5 @@
 <!--1155197473-->
+<!--类别下没有商品时 点击该类别不会切换-->
 <?php
 require '../includes/dbconfig.php';
 ?>
@@ -17,15 +18,9 @@ require '../includes/dbconfig.php';
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>
     <div class="shopping-list-details">
-        <ul>
-            <li>
-                <span class="item-name">Product 2</span>
-                <input class="item-quantity" type="number" value="1">
-                <span class="item-price">$19.99</span>
-            </li>
-        </ul>
+        <ul id="shopping-list"></ul>
         <div class="checkout">
-            <span class="total-price">Total: $19.99</span>
+            <span class="total-price">Total: $0.00</span>
             <button class="checkout-button">Checkout</button>
         </div>
     </div>
@@ -55,13 +50,13 @@ require '../includes/dbconfig.php';
     while ($product = $productsResult->fetch_assoc()):
     ?>
 
-    <div class="product" data-category="<?php echo $product['category_name']; ?>">
+    <div class="product" data-pid="<?php echo $product['pid']; ?>" data-category="<?php echo $product['category_name']; ?>">
         <a href="product.php?id=<?php echo $product['pid']; ?>">
             <img src="uploads/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>">
             <h2><?php echo $product['name']; ?></h2>
         </a>
         <p><?php echo $product['price']; ?>$</p>
-        <button>Add to Cart</button>
+        <button class="addToCart">Add to Cart</button>
     </div>
 
     <?php endwhile; ?>

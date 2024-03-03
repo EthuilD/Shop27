@@ -73,11 +73,13 @@ nav a {
     position: absolute;
     right: 0;
     top: 100%;
-    width: 300px;
+    width: 400px;
     background-color: #fff;
     box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     border: 1px solid #ddd;
     z-index: 1001;
+    max-height: 100vh; /* 不超过视口高度 */
+    overflow-y: auto; /* 如果内容过高，允许滚动 */
 }
 
 .shopping-list-container:hover .shopping-list-details {
@@ -96,6 +98,20 @@ nav a {
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #eee;
+}
+
+.item-name {
+    flex-grow: 1; /* 允许商品名称占据多余空间 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-quantity,
+.item-price,
+.remove-item {
+    flex-shrink: 0; /* 防止这些元素在空间不足时被压缩 */
+    white-space: nowrap; /* 防止内容换行 */
 }
 
 #category-list {
