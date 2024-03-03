@@ -32,15 +32,9 @@ if ($result && $result->num_rows > 0) {
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>
     <div class="shopping-list-details">
-        <ul>
-            <li>
-                <span class="item-name">Product 2</span>
-                <input class="item-quantity" type="number" value="1">
-                <span class="item-price">$19.99</span>
-            </li>
-        </ul>
+        <ul id="shopping-list"></ul>
         <div class="checkout">
-            <span class="total-price">Total: $19.99</span>
+            <span class="total-price">Total: $0.00</span>
             <button class="checkout-button">Checkout</button>
         </div>
     </div>
@@ -68,10 +62,10 @@ if ($result && $result->num_rows > 0) {
     <div class="product-image">
         <img src="uploads/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>">
     </div>
-    <div class="product-info">
+    <div class="product-info" data-pid="<?php echo $product['pid']; ?>">
         <h1><?php echo $product['name']; ?></h1>
         <h2 class="product-price"><?php echo $product['price']; ?> $</h2>
-        <button>Add to Cart</button>
+        <button class="addToCart">Add to Cart</button>
     </div>
     <div class="product-description">
         <h2>Product Details</h2>
