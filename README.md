@@ -6,3 +6,6 @@
 ## Phase 2
 - Upload all documents to the server
 - Temporarily opening access to the admin panel
+## Phase 3
+- Complete the shopping list function
+- Add a lot of functionality to myScript.js. Modified some contents of the index and product interfaces.
