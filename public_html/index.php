@@ -2,6 +2,7 @@
 <!--类别下没有商品时 点击该类别不会切换-->
 <?php
 require '../includes/dbconfig.php';
+$limit = 4; // 每页显示的产品数量
 ?>
 
 <!DOCTYPE html>
@@ -45,17 +46,19 @@ require '../includes/dbconfig.php';
 
 <section class="products">
     <?php
-    $productsQuery = "SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.catid = c.catid";
-    $productsResult = $conn->query($productsQuery);
+    $stmt = $conn->prepare("SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.catid = c.catid LIMIT ?");
+    $stmt->bind_param('i', $limit);
+    $stmt->execute();
+    $productsResult = $stmt->get_result();
     while ($product = $productsResult->fetch_assoc()):
     ?>
 
-    <div class="product" data-pid="<?php echo $product['pid']; ?>" data-category="<?php echo $product['category_name']; ?>">
-        <a href="product.php?id=<?php echo $product['pid']; ?>">
-            <img src="uploads/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>">
-            <h2><?php echo $product['name']; ?></h2>
+    <div class="product" data-pid="<?php echo htmlspecialchars($product['pid'], ENT_QUOTES, 'UTF-8'); ?>" data-category="<?php echo htmlspecialchars($product['category_name'], ENT_QUOTES, 'UTF-8'); ?>">
+        <a href="product.php?id=<?php echo htmlspecialchars($product['pid'], ENT_QUOTES, 'UTF-8'); ?>">
+            <img src="uploads/<?php echo htmlspecialchars($product['image'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?>">
+            <h2><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></h2>
         </a>
-        <p><?php echo $product['price']; ?>$</p>
+        <p><?php echo htmlspecialchars($product['price'], ENT_QUOTES, 'UTF-8'); ?>$</p>
         <button class="addToCart">Add to Cart</button>
     </div>
 
