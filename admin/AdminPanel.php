@@ -1,3 +1,4 @@
+<!--3.21 没有完全参数化 记得改完再提交-->
 <?php
 require '../includes/dbconfig.php';
 // 获取所有类别
@@ -34,11 +35,11 @@ if ($productsResult === false) {
     <tbody>
     <?php while($category = $categoriesResult->fetch_assoc()): ?>
         <tr>
-            <td><?php echo $category['catid']; ?></td>
-            <td><?php echo $category['name']; ?></td>
+            <td><?php echo htmlspecialchars($category['catid'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?></td>
             <td>
-                <a href="updateCategory.php?id=<?php echo $category['catid']; ?>">Update</a>
-                <a href="deleteCategory.php?id=<?php echo $category['catid']; ?>">Delete</a>
+                <a href="updateCategory.php?id=<?php echo htmlspecialchars($category['catid'], ENT_QUOTES, 'UTF-8'); ?>">Update</a>
+                <a href="deleteCategory.php?id=<?php echo htmlspecialchars($category['catid'], ENT_QUOTES, 'UTF-8'); ?>">Delete</a>
             </td>
         </tr>
     <?php endwhile; ?>
@@ -61,15 +62,16 @@ if ($productsResult === false) {
     <tbody>
     <?php while($product = $productsResult->fetch_assoc()): ?>
         <tr>
-            <td><?php echo $product['pid']; ?></td>
-            <td><?php echo $product['category_name']; ?></td>
-            <td><?php echo $product['name']; ?></td>
-            <td><?php echo $product['price']; ?></td>
-            <td><?php echo $product['description']; ?></td>
-            <td><img src="../public_html/uploads/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="thumbnail" /></td>
+            <td><?php echo htmlspecialchars($product['pid'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($product['category_name'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($product['price'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><img src="../public_html/uploads/<?php echo htmlspecialchars($product['image'], ENT_QUOTES, 'UTF-8'); ?>"
+                     alt="<?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?>" class="thumbnail" /></td>
             <td>
-                <a href="updateProduct.php?id=<?php echo $product['pid']; ?>">Update</a>
-                <a href="deleteProduct.php?id=<?php echo $product['pid']; ?>">Delete</a>
+                <a href="updateProduct.php?id=<?php echo htmlspecialchars($product['pid'], ENT_QUOTES, 'UTF-8'); ?>">Update</a>
+                <a href="deleteProduct.php?id=<?php echo htmlspecialchars($product['pid'], ENT_QUOTES, 'UTF-8'); ?>">Delete</a>
             </td>
         </tr>
     <?php endwhile; ?>

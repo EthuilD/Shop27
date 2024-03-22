@@ -18,6 +18,17 @@ if (isset($_POST['create'])) {
     $price = $_POST['price'];
     $description = $_POST['description'];
     $imagePath = null; // 初始化图片路径变量
+    //输入验证部分
+    if (empty($name)) {
+        $errors[] = 'The name of the product cannot be empty.';
+    }
+    // 验证价格是否为有效数字
+    if (!is_numeric($price) || floatval($price) < 0) {
+        $errors[] = 'Invalid price. Price must be a number and cannot be negative.';
+    }
+    if (empty($description)) {
+        $errors[] = 'The description of the product cannot be empty.';
+    }
 
     // 如果有新图片上传，处理图片上传逻辑
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
@@ -42,24 +53,24 @@ if (isset($_POST['create'])) {
     }
 
     // 构建SQL插入语句
-    $sql = "INSERT INTO `products` (`catid`, `name`, `price`, `description`, `image`) VALUES ('$catid', '$name', '$price', '$description', '$imagePath')";
-
-    // 执行查询
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("INSERT INTO products (catid, name, price, description, image) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("isdss",$catid, $name, $price, $description, $imagePath);
+    $result = $stmt->execute();
 
     // 处理查询结果
     if ($result == TRUE) {
         echo "New product created successfully.";
         header('Location: AdminPanel.php'); // 成功后重定向到产品查看页面
     } else {
-        echo "Error:" . $sql . "<br>" . $conn->error; // 失败输出错误信息
+        echo "Error: " . $stmt->error; // 失败输出错误信息
     }
+    $stmt->close();
 }
 ?>
 
 <!-- HTML 表单部分 -->
 <h2>Create New Product</h2>
-<form action="" method="post" enctype="multipart/form-data">
+<form id="productForm" action="" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Product Information:</legend>
         Name:<br>
@@ -83,6 +94,7 @@ if (isset($_POST['create'])) {
         Image:<br>
         <input type="file" name="image">
         <br><br>
-        <input type="submit" value="Create" name="create">
+        <input type="submit" value="Create" name="create" id="submitButton">
     </fieldset>
 </form>
+<script src="scriptForAdmin.js"></script>

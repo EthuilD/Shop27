@@ -13,14 +13,26 @@ if (isset($_POST['update'])) {
     // 如果有新图片上传，处理图片上传逻辑
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         //删除旧图像
+        $uploadDirPath = '../public_html/uploads/';
         $fileQuery = "SELECT image FROM products WHERE pid = ?";
         $stmt = $conn->prepare($fileQuery);
         $stmt->bind_param('i', $product_id);
         $stmt->execute();
         $result = $stmt->get_result();
         $product = $result->fetch_assoc();
-        if ($product && file_exists($product['image'])) {
-            unlink($product['image']); // 删除文件
+        if ($product) {
+            $oldImagePath = $uploadDirPath . $product['image'];
+            // 检查文件是否存在，并尝试删除它
+            if (file_exists($oldImagePath)) {
+                $deleted = unlink($oldImagePath);
+                if (!$deleted) {
+                    // 如果文件删除失败
+                    error_log("Unable to delete file: {$oldImagePath}");
+                }
+            } else {
+                // 如果文件不存在
+                error_log("File not found: {$oldImagePath}");
+            }
         }
         $stmt->close();
 
@@ -43,7 +55,8 @@ if (isset($_POST['update'])) {
     }
 
     // 构建SQL更新语句，如果有图片路径更新，则包含图片路径
-    $sql = "UPDATE `products` SET `catid`='$category_id', `name`='$name', `price`='$price', `description`='$description'".($imagePath ? ", `image`='$imagePath'" : "")." WHERE `pid`='$product_id'";
+    $sql = "UPDATE `products` SET `catid`='$category_id', `name`='$name', `price`='$price', `description`='$description'"
+        .($imagePath ? ", `image`='$imagePath'" : "")." WHERE `pid`='$product_id'";
 
     // 执行查询
     $result = $conn->query($sql);
@@ -77,7 +90,7 @@ if (isset($_GET['id'])) { // 如果通过GET请求传递了产品ID
 
         <!-- HTML 表单部分 -->
         <h2>Update Product</h2>
-        <form action="" method="post" enctype="multipart/form-data">
+        <form id="productForm" action="" method="post" enctype="multipart/form-data">
             <fieldset>
                 <legend>Product Information:</legend>
                 Name:<br>
@@ -100,10 +113,10 @@ if (isset($_GET['id'])) { // 如果通过GET请求传递了产品ID
                 Image:<br>
                 <input type="file" name="image">
                 <br><br>
-                <input type="submit" value="Update" name="update">
+                <input type="submit" value="Update" name="update" id="submitButton">
             </fieldset>
         </form>
-
+        <script src="scriptForAdmin.js"></script>
         <?php
     } else {
         header('Location: AdminPanel.php'); // 如果没有找到产品，重定向到产品查看页面
