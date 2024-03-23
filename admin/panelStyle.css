@@ -43,3 +43,22 @@ a:hover {
     max-width: 200px;
     max-height: 200px;
 }
+.button-link {
+    display: inline-block;
+    margin-right: 5px; /* 为按钮之间添加一些空间 */
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+.update-button {
+    background-color: #1E90FF;
+}
+.delete-button {
+    background-color: #FA8072;
+}
+.button-link:hover {
+    opacity: 0.8;
+}

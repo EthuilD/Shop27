@@ -1,13 +1,37 @@
 <?php
 include "../includes/dbconfig.php";
+function generateNonce() {
+    $nonce = bin2hex(random_bytes(16));
+    $_SESSION['nonce'] = $nonce;
+    return $nonce;
+}
+// 验证Nonce
+function verifyNonce($receivedNonce) {
+    if (isset($_SESSION['nonce']) && $receivedNonce === $_SESSION['nonce']) {
+        unset($_SESSION['nonce']); // 验证后即销毁
+        return true;
+    }
+    return false;
+}
+function test_input($data){
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+//会话开始
+session_start();
 
 if (isset($_POST['update'])) {
+    if (!verifyNonce($_POST['nonce'])) {
+        die('CSRF detection failed.');
+    }
     // 获取表单数据
-    $product_id = $_POST['pid'];
-    $category_id = $_POST['catid'];
-    $name = $_POST['name'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
+    $product_id = test_input($_POST['pid']);
+    $category_id = test_input($_POST['catid']);
+    $name = test_input($_POST['name']);
+    $price = test_input($_POST['price']);
+    $description = test_input($_POST['description']);
     $imagePath = null; // 初始化图片路径变量
 
     // 如果有新图片上传，处理图片上传逻辑
@@ -42,39 +66,52 @@ if (isset($_POST['update'])) {
         $imageSize = $_FILES['image']['size'];
 
         if (in_array($imageType, $allowedTypes) && $imageSize <= $allowedSize) {
-            $imagePath = '../public_html/uploads/' . basename($_FILES['image']['name']);
+            // 生成随机文件名以避免文件名冲突和安全风险
+            $imageExtension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $newFileName = uniqid('img_', true) . '.' . $imageExtension;
+            $imagePath = $uploadDirPath . $newFileName;
             if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
                 // 文件上传成功
+                $imagePath = $newFileName;
             } else {
                 die('File upload failed.');
             }
         } else {
             die('Unsupported file type or file is too large.');
         }
-        $imagePath = basename($_FILES['image']['name']);
     }
 
-    // 构建SQL更新语句，如果有图片路径更新，则包含图片路径
-    $sql = "UPDATE `products` SET `catid`='$category_id', `name`='$name', `price`='$price', `description`='$description'"
-        .($imagePath ? ", `image`='$imagePath'" : "")." WHERE `pid`='$product_id'";
+    // 构建参数化的SQL更新语句
+    $sql = "UPDATE `products` SET `catid`=?, `name`=?, `price`=?, `description`=?" . ($imagePath ? ", `image`=?" : "") . " WHERE `pid`=?";
+    $stmt = $conn->prepare($sql);
+    $params = [$category_id, $name, $price, $description];
+    if ($imagePath) {
+        $params[] = $imagePath;
+    }
+    $params[] = $product_id;
 
-    // 执行查询
-    $result = $conn->query($sql);
+    $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+    $result = $stmt->execute();
 
     // 处理查询结果
     if ($result == TRUE) {
         echo "The record was updated successfully.";
         header('Location: AdminPanel.php'); // 成功后重定向到产品查看页面
     } else {
-        echo "Error:" . $sql . "<br>" . $conn->error; // 失败输出错误信息
+        error_log("Error:" . $conn->error); // 将错误记录到日志
+        echo "An error occurred. Please try again."; // 向用户显示通用错误消息
     }
 }
 
-if (isset($_GET['id'])) { // 如果通过GET请求传递了产品ID
-    $pid = $_GET['id']; // 获取产品ID
+if (isset($_GET['pid'])) { // 如果通过GET请求传递了产品ID
+    $pid = $_GET['pid']; // 获取产品ID
     // 查询产品当前信息
-    $sql = "SELECT * FROM products WHERE pid='$pid'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT * FROM products WHERE pid=?");
+    $stmt->bind_param("i",$pid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $nonce = generateNonce();
 
     if ($result->num_rows > 0) { // 如果查询到产品信息
         $row = $result->fetch_assoc(); // 获取产品信息
@@ -91,27 +128,28 @@ if (isset($_GET['id'])) { // 如果通过GET请求传递了产品ID
         <!-- HTML 表单部分 -->
         <h2>Update Product</h2>
         <form id="productForm" action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="nonce" value="<?php echo htmlspecialchars($nonce); ?>">
             <fieldset>
                 <legend>Product Information:</legend>
                 Name:<br>
-                <input type="text" name="name" value="<?php echo $name; ?>">
-                <input type="hidden" name="pid" value="<?php echo $pid; ?>">
+                <input type="text" name="name" value="<?php echo htmlspecialchars($name); ?>" required minlength="1" maxlength="200">
+                <input type="hidden" name="pid" value="<?php echo htmlspecialchars($pid); ?>">
                 <br>
                 Category:<br>
-                <select id="catid" name="catid">
+                <select id="catid" name="catid" required>
                     <?php while($category = $categoriesResult->fetch_assoc()): ?>
-                        <option value="<?php echo $category['catid']; ?>"><?php echo $category['name']; ?></option>
+                        <option value="<?php echo htmlspecialchars($category['catid']); ?>"><?php echo htmlspecialchars($category['name']); ?></option>
                     <?php endwhile; ?>
                 </select>
                 <br>
                 Price:<br>
-                <input type="text" name="price" value="<?php echo $price; ?>">
+                <input type="text" name="price" value="<?php echo htmlspecialchars($price); ?> " required pattern="^\d+(\.\d{1,2})?$">
                 <br>
                 Description:<br>
-                <textarea name="description"><?php echo $description; ?></textarea>
+                <textarea name="description"><?php echo htmlspecialchars($description); ?></textarea>
                 <br>
                 Image:<br>
-                <input type="file" name="image">
+                <input type="file" name="image" accept="image/png, image/jpeg">
                 <br><br>
                 <input type="submit" value="Update" name="update" id="submitButton">
             </fieldset>
