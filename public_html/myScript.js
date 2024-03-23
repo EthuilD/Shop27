@@ -19,7 +19,7 @@ document.addEventListener('click', function(event) {
             const pid = targetElement.getAttribute('data-pid');
             if (pid) {
                 addProductToList(pid, 1);
-                updateQuantity(pid, 1); // 假设添加到购物车的默认数量为1
+                updateQuantity(pid, 1); // 添加到购物车的默认数量为1
             } else {
                 console.error('Product ID not found');
             }
@@ -154,3 +154,63 @@ function updateTotal() {
     });
     document.querySelector('.total-price').textContent = `Total: $${total.toFixed(2)}`;
 }
+
+//以下为无限滚动代码，!整合到分页操作中
+let page = 0;
+const productsElement = document.querySelector('.products');
+const endOfPageThreshold = 300; // 当用户滚动到距离底部300px时加载更多
+
+//节流函数
+function throttle(func, limit) {
+    let inThrottle; //跟踪节流状态，节流发生时为true
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {  //不在节流状态时执行
+            func.apply(context, args); //apply 方法调用原函数 func
+            inThrottle = true; //节流开始
+            setTimeout(() => inThrottle = false, limit); //在指定的 limit 时间后，将 inThrottle 重置为 false
+        }
+    }
+}
+const throttledScrollHandler = throttle(() => {
+    if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - endOfPageThreshold) {
+        loadMoreProducts();
+    }
+}, 200);
+
+// 使用节流的滚动事件处理器
+window.addEventListener('scroll', throttledScrollHandler);
+
+function loadMoreProducts() {
+    page++;
+    fetch(`api/get_products.php?page=${page}`)
+        .then(response => response.json())
+        .then(products => {
+            console.log(products);
+            if (products.length) {
+                products.forEach(product => {
+                    const productElement = document.createElement('div');
+                    productElement.className = 'product';
+                    productElement.setAttribute('data-pid', product.pid);
+                    productElement.setAttribute('data-category', product.catid);
+                    productElement.innerHTML = `
+          <a href="product.php?id=${product.pid}">
+            <img src="uploads/${product.image}" alt="${product.name}">
+            <h2>${product.name}</h2>
+          </a>
+          <p>$${product.price}</p>
+          <button class="addToCart">Add to Cart</button>
+        `;
+                    productsElement.appendChild(productElement);
+                });
+            } else {
+                // 如果没有更多产品，则移除滚动事件监听以停止尝试加载更多
+                window.removeEventListener('scroll', loadMoreProducts);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading more products:', error);
+        });
+}
+

@@ -22,7 +22,7 @@ if ($productsResult === false) {
 </head>
 <body>
 <h1>Category List</h1>
-<a href="CreateCategory.php">Create Category</a>
+<a href="create.php?action=create_category">Create Category</a>
 <table>
     <thead>
     <tr>
@@ -34,18 +34,25 @@ if ($productsResult === false) {
     <tbody>
     <?php while($category = $categoriesResult->fetch_assoc()): ?>
         <tr>
-            <td><?php echo $category['catid']; ?></td>
-            <td><?php echo $category['name']; ?></td>
+            <td><?php echo htmlspecialchars($category['catid']); ?></td>
+            <td><?php echo htmlspecialchars($category['name']); ?></td>
             <td>
-                <a href="updateCategory.php?id=<?php echo $category['catid']; ?>">Update</a>
-                <a href="deleteCategory.php?id=<?php echo $category['catid']; ?>">Delete</a>
+                <form action="updateCategory.php" method="get" style="display: inline;">
+                    <input type="hidden" name="catid" value="<?php echo htmlspecialchars($category['catid']); ?>">
+                    <input type="submit" class="button-link update-button" value="Update">
+                </form>
+                <form action="delete.php" method="post" style="display: inline;">
+                    <input type="hidden" name="type" value="category">
+                    <input type="hidden" name="catid" value="<?php echo htmlspecialchars($category['catid']); ?>">
+                    <input type="submit" class="button-link delete-button" value="Delete">
+                </form>
             </td>
         </tr>
     <?php endwhile; ?>
     </tbody>
 </table>
 <h1>Product List</h1>
-<a href="CreateProduct.php">Create Product</a>
+<a href="create.php?action=create_product">Create Product</a>
 <table>
     <thead>
     <tr>
@@ -61,15 +68,23 @@ if ($productsResult === false) {
     <tbody>
     <?php while($product = $productsResult->fetch_assoc()): ?>
         <tr>
-            <td><?php echo $product['pid']; ?></td>
-            <td><?php echo $product['category_name']; ?></td>
-            <td><?php echo $product['name']; ?></td>
-            <td><?php echo $product['price']; ?></td>
-            <td><?php echo $product['description']; ?></td>
-            <td><img src="../public_html/uploads/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="thumbnail" /></td>
+            <td><?php echo htmlspecialchars($product['pid']); ?></td>
+            <td><?php echo htmlspecialchars($product['category_name']); ?></td>
+            <td><?php echo htmlspecialchars($product['name']); ?></td>
+            <td><?php echo htmlspecialchars($product['price']); ?></td>
+            <td><?php echo htmlspecialchars($product['description']); ?></td>
+            <td><img src="../public_html/uploads/<?php echo htmlspecialchars($product['image']); ?>"
+                     alt="<?php echo htmlspecialchars($product['name']); ?>" class="thumbnail" /></td>
             <td>
-                <a href="updateProduct.php?id=<?php echo $product['pid']; ?>">Update</a>
-                <a href="deleteProduct.php?id=<?php echo $product['pid']; ?>">Delete</a>
+                <form action="updateProduct.php" method="get" style="display: inline;">
+                    <input type="hidden" name="pid" value="<?php echo htmlspecialchars($product['pid']); ?>">
+                    <input type="submit" class="button-link update-button" value="Update">
+                </form>
+                <form action="delete.php" method="post" style="display: inline;">
+                    <input type="hidden" name="type" value="product">
+                    <input type="hidden" name="pid" value="<?php echo htmlspecialchars($product['pid']); ?>">
+                    <input type="submit" class="button-link delete-button" value="Delete">
+                </form>
             </td>
         </tr>
     <?php endwhile; ?>
