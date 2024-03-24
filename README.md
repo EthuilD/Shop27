@@ -9,3 +9,7 @@
 ## Phase 3
 - Complete the shopping list function
 - Add a lot of functionality to myScript.js. Modified some contents of the index and product interfaces.
+## Phase 4
+- Test accounts:
+- admin: admin@example.com  adminpassword
+- normal user: user@example.com userpassword
