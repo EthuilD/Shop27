@@ -1,5 +1,5 @@
 <?php
-require '../includes/dbconfig.php';
+require_once 'admin-main.php';
 
 if (isset($_POST['type'])) {
     if ($_POST['type'] == 'product' && isset($_POST['pid'])) {

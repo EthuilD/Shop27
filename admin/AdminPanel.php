@@ -1,16 +1,8 @@
 <?php
-require '../includes/dbconfig.php';
-// 获取所有类别
-$categoriesQuery = "SELECT * FROM categories";
-$categoriesResult = $conn->query($categoriesQuery);
-
-// 获取所有产品
-$productsQuery = "SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.catid = c.catid";
-$productsResult = $conn->query($productsQuery);
-if ($productsResult === false) {
-    die("Query failed: " . $conn->error);
-}
-
+require_once 'admin-main.php';
+// 准备数据以供显示
+$categoriesResult = getCategories($conn);
+$productsResult = getProducts($conn);
 ?>
 
 <!DOCTYPE html>
@@ -73,7 +65,8 @@ if ($productsResult === false) {
             <td><?php echo htmlspecialchars($product['name']); ?></td>
             <td><?php echo htmlspecialchars($product['price']); ?></td>
             <td><?php echo htmlspecialchars($product['description']); ?></td>
-            <td><img src="../public_html/uploads/<?php echo htmlspecialchars($product['image']); ?>"
+            <!--服务器中，此处路径改为/uploads/-->
+            <td><img src="/uploads/<?php echo htmlspecialchars($product['image']); ?>"
                      alt="<?php echo htmlspecialchars($product['name']); ?>" class="thumbnail" /></td>
             <td>
                 <form action="updateProduct.php" method="get" style="display: inline;">

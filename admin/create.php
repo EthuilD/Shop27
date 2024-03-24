@@ -1,26 +1,6 @@
 <?php
-include "../includes/dbconfig.php";
-function generateNonce() {
-    $nonce = bin2hex(random_bytes(16));
-    $_SESSION['nonce'] = $nonce;
-    return $nonce;
-}
-// 验证Nonce
-function verifyNonce($receivedNonce) {
-    if (isset($_SESSION['nonce']) && $receivedNonce === $_SESSION['nonce']) {
-        unset($_SESSION['nonce']); // 验证后即销毁
-        return true;
-    }
-    return false;
-}
-function test_input($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-//会话开始
-session_start();
+require_once 'admin-main.php';
+
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 // 确保PHP代码正确地处理用户输入
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
@@ -151,7 +131,7 @@ if ($action == 'create_category') {
             </select>
             <br>
             Price:<br>
-            <input type="text" name="price" required pattern="^\d+(\.\d{1,2})?$">
+            <input type="text" name="price" required pattern="^\d+(\.\d{1,2})? ?$">
             <br>
             Description:<br>
             <textarea name="description"></textarea>

@@ -1,26 +1,5 @@
 <?php
-include "../includes/dbconfig.php";
-function generateNonce() {
-    $nonce = bin2hex(random_bytes(16));
-    $_SESSION['nonce'] = $nonce;
-    return $nonce;
-}
-// 验证Nonce
-function verifyNonce($receivedNonce) {
-    if (isset($_SESSION['nonce']) && $receivedNonce === $_SESSION['nonce']) {
-        unset($_SESSION['nonce']); // 验证后即销毁
-        return true;
-    }
-    return false;
-}
-function test_input($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-//会话开始
-session_start();
+require_once 'admin-main.php';
 
 if (isset($_POST['update'])) {
     if (!verifyNonce($_POST['nonce'])) {
