@@ -2,7 +2,9 @@
 <!--类别下没有商品时 点击该类别不会切换-->
 <?php
 require '../includes/dbconfig.php';
-$limit = 4; // 每页显示的产品数量
+session_start();
+$limit = 8; // 每页显示的产品数量
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
 ?>
 
 <!DOCTYPE html>
@@ -12,9 +14,31 @@ $limit = 4; // 每页显示的产品数量
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Site</title>
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
+
+<div class="user-info-container">
+    <!-- 显示用户名或“guest” -->
+    <div class="user-info">
+        Welcome, <?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>
+    </div>
+    <!-- 如果用户是“guest”，则显示登录按钮 -->
+    <?php if ($username === "guest"): ?>
+        <div class="log-button">
+            <a href="login.php"><button>Login</button></a>
+        </div>
+    <?php else: ?>
+        <div class="dropdown">
+            <button class="dropbtn">Account</button>
+            <div class="dropdown-content">
+                <button><a href="changePassword.php">Change Password</a></button>
+                <form method="POST" action="api/auth-process.php">
+                    <button type="submit" name="logout">&nbsp;&nbsp;Logout</button>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
 
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>

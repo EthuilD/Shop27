@@ -1,26 +1,5 @@
 <?php
-include "../includes/dbconfig.php";
-function generateNonce() {
-    $nonce = bin2hex(random_bytes(16));
-    $_SESSION['nonce'] = $nonce;
-    return $nonce;
-}
-// 验证Nonce
-function verifyNonce($receivedNonce) {
-    if (isset($_SESSION['nonce']) && $receivedNonce === $_SESSION['nonce']) {
-        unset($_SESSION['nonce']); // 验证后即销毁
-        return true;
-    }
-    return false;
-}
-function test_input($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-//会话开始
-session_start();
+require_once 'admin-main.php';
 
 if (isset($_POST['update'])) {
     if (!verifyNonce($_POST['nonce'])) {
@@ -143,7 +122,7 @@ if (isset($_GET['pid'])) { // 如果通过GET请求传递了产品ID
                 </select>
                 <br>
                 Price:<br>
-                <input type="text" name="price" value="<?php echo htmlspecialchars($price); ?> " required pattern="^\d+(\.\d{1,2})?$">
+                <input type="text" name="price" value="<?php echo htmlspecialchars($price); ?> " required pattern="^\d+(\.\d{1,2})? ?$">
                 <br>
                 Description:<br>
                 <textarea name="description"><?php echo htmlspecialchars($description); ?></textarea>
