@@ -54,6 +54,55 @@ nav a {
     font-weight: bold;
 }
 
+/* 用户信息和登录按钮的容器样式 */
+.user-info-container {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    right: 20%;
+    z-index: 1000;
+}
+
+.user-info {
+    margin-right: 20px;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    border-radius: 2px;
+}
+.log-button button, .dropdown button,.dropdown a{
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    padding: 5px;
+    margin: 0;
+    line-height: 1;
+    text-decoration:none;
+}
+
+.log-button button:hover,.dropdown button:hover,.dropdown a:hover {
+    background-color: transparent;
+    color: #0000CD;
+    text-decoration: none;
+}
+
 .shopping-list-container {
     position: fixed;
     top: 0;
@@ -277,4 +326,56 @@ button {
 
 button:hover {
     background-color: #F08080;
+}
+
+/* 登录界面 */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.welcome-message h2 {
+    color: #333;
+    font-size: 24px;
+}
+
+.welcome-message p {
+    margin: 5px 0 20px;
+    color: #666;
+    font-size: 16px;
+}
+.login-form {
+    min-width: 300px;
+    width: auto;
+    border: 1px solid #dedede;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+.login-form input[type="email"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.login-form button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.error {
+    color: #ff0000;
+    margin-bottom: 15px;
 }

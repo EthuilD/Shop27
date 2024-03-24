@@ -158,7 +158,7 @@ function updateTotal() {
 //以下为无限滚动代码，!整合到分页操作中
 let page = 0;
 const productsElement = document.querySelector('.products');
-const endOfPageThreshold = 300; // 当用户滚动到距离底部300px时加载更多
+const endOfPageThreshold = window.innerHeight * 0.2; // 当用户滚动到距离底部300px时加载更多
 
 //节流函数
 function throttle(func, limit) {
