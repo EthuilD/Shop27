@@ -68,8 +68,16 @@ if ($result && $result->num_rows > 0) {
         <button class="addToCart">Add to Cart</button>
     </div>
     <div class="product-description">
-        <h2>Product Details</h2>
-        <p><?php echo $product['description']; ?></p>
+        <div class="tab-list">
+            <ul>
+                <li class="current">Details</li>
+                <li>Specifications</li>
+            </ul>
+        </div>
+        <div class="tab-con">
+            <p class="des-item" style="display: block"><?php echo $product['description']; ?></p>
+            <p class="des-item"> Specifications of <?php echo $product['name']; ?></p>
+        </div>
     </div>
 </section>
 

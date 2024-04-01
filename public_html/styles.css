@@ -313,6 +313,23 @@ footer {
     margin-left: 50px;
     width: 100%;
 }
+.tab-list ul{
+    background-color: white;
+    display: flex;
+    list-style-type: none;
+    width: 95%;
+}
+.tab-list li {
+    padding: 10px;
+    cursor: pointer;
+}
+.tab-list .current{
+    background-color: #F08080;
+    color: white;
+}
+.des-item{
+    display: none;
+}
 
 button {
     background-color: #FA8072;

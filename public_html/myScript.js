@@ -55,7 +55,6 @@ function loadProducts(catid) {
     fetch(`api/get_products.php?catid=${catid}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             const productsElement = document.querySelector('.products');
             productsElement.innerHTML = ''; // 清空现有的列表
             data.forEach(product => {
@@ -63,14 +62,30 @@ function loadProducts(catid) {
                 productElement.className = 'product';
                 productElement.setAttribute('data-pid', product.pid);
                 productElement.setAttribute('data-category', product.catid);
-                productElement.innerHTML = `
-          <a href="product.php?id=${product.pid}">
-            <img src="uploads/${product.image}" alt="${product.name}">
-            <h2>${product.name}</h2>
-          </a>
-          <p>$${product.price}</p>
-          <button class="addToCart">Add to Cart</button>
-        `;
+
+                const linkElement = document.createElement('a');
+                linkElement.href = `product.php?id=${product.pid}`;
+
+                const imgElement = document.createElement('img');
+                imgElement.src = `uploads/${product.image}`;
+                imgElement.alt = product.name;
+
+                const h2Element = document.createElement('h2');
+                h2Element.textContent = product.name;
+
+                const pElement = document.createElement('p');
+                pElement.textContent = `$${product.price}`;
+
+                const buttonElement = document.createElement('button');
+                buttonElement.className = 'addToCart';
+                buttonElement.textContent = 'Add to Cart';
+
+                linkElement.appendChild(imgElement);
+                linkElement.appendChild(h2Element);
+                productElement.appendChild(linkElement);
+                productElement.appendChild(pElement);
+                productElement.appendChild(buttonElement);
+
                 productsElement.appendChild(productElement);
             });
         });
@@ -158,7 +173,7 @@ function updateTotal() {
 //以下为无限滚动代码，!整合到分页操作中
 let page = 0;
 const productsElement = document.querySelector('.products');
-const endOfPageThreshold = window.innerHeight * 0.2; // 当用户滚动到距离底部300px时加载更多
+const endOfPageThreshold = window.innerHeight * 0.2; // 当用户滚动到距离底部20%时加载更多
 
 //节流函数
 function throttle(func, limit) {
@@ -187,7 +202,6 @@ function loadMoreProducts() {
     fetch(`api/get_products.php?page=${page}`)
         .then(response => response.json())
         .then(products => {
-            console.log(products);
             if (products.length) {
                 products.forEach(product => {
                     const productElement = document.createElement('div');
@@ -214,3 +228,28 @@ function loadMoreProducts() {
         });
 }
 
+let tabs = document.querySelectorAll('.tab-list li');
+// 为每个 li 元素添加点击事件监听器
+tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+        // 移除所有 tab 的 'current' 类
+        tabs.forEach(function(tab) {
+            tab.classList.remove('current');
+        });
+
+        // 为被点击的 tab 添加 'current' 类
+        this.classList.add('current');
+
+        // 获取所有的 '.des-item' 元素
+        let desItems = document.querySelectorAll('.des-item');
+
+        // 隐藏所有的 '.des-item' 元素
+        desItems.forEach(function(item) {
+            item.style.display = 'none';
+        });
+
+        // 显示与被点击的 tab 对应的 '.des-item' 元素
+        let index = Array.from(tabs).indexOf(this);
+        desItems[index].style.display = 'block';
+    });
+});
