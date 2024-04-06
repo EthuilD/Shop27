@@ -1,5 +1,6 @@
 <?php
-session_start();
+require 'api/auth-process.php';
+$nonce = generateNonce();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +29,7 @@ session_start();
         <label for="password">Confirm New Password:</label>
         <input type="password" name="confirm_new_password" required>
 
+        <input type="hidden" name="nonce" value="<?php echo htmlspecialchars($nonce); ?>">
         <button type="submit">Change Password</button>
     </form>
 </div>

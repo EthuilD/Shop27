@@ -1,3 +1,7 @@
+<?php
+require 'api/auth-process.php';
+$nonce = generateNonce();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,10 +28,9 @@
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-
+        <input type="hidden" name="nonce" value="<?php echo htmlspecialchars($nonce); ?>">
         <button type="submit" name="login">Login</button>
     </form>
 </div>
-
 </body>
 </html>
