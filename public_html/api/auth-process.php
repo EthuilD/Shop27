@@ -1,5 +1,29 @@
 <?php
-require '../../includes/dbconfig.php';
+session_start();
+// 生成并验证Nonce
+function generateNonce(): string
+{
+    try {
+        $nonce = bin2hex(random_bytes(16));
+    } catch (Exception $e) {
+        die('Error generating nonce: ' . $e->getMessage());
+    }
+
+    if (!isset($_SESSION)) {
+        die('Session is not started');
+    }
+
+    $_SESSION['nonce'] = $nonce;
+    return $nonce;
+}
+function verifyNonce($receivedNonce): bool
+{
+    if (isset($_SESSION['nonce']) && $receivedNonce === $_SESSION['nonce']) {
+        unset($_SESSION['nonce']); // 验证后即销毁
+        return true;
+    }
+    return false;
+}
 // 验证电子邮件格式
 function validateEmail($email) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -52,12 +76,16 @@ function logoutUser() {
     header('Location: ../index.php');
     exit();
 }
-session_start();
-
 if (isset($_POST['login'])) {
+    require '../../includes/dbconfig.php';
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $nonce = $_POST['nonce']; // 从表单中获取提交的Nonce
 
+    // 验证Nonce
+    if (!verifyNonce($nonce)) {
+        die('CSRF detection failed.');
+    }
     // 使用辅助函数验证电子邮件和密码
     validateEmail($email);
     validatePassword($password);
@@ -89,15 +117,21 @@ if (isset($_POST['login'])) {
     } else {
         die('No user found with that email address');
     }
+    $conn->close();
 } elseif (isset($_POST['logout'])) { // 处理注销
-
     logoutUser();
 
 }elseif (isset($_POST['action']) && $_POST['action'] == 'change_password') {
+    require '../../includes/dbconfig.php';
     $old_password = $_POST['old_password'];
     $new_password = $_POST['new_password'];
     $confirm_new_password = $_POST['confirm_new_password'];
+    $nonce = $_POST['nonce']; // 从表单中获取提交的Nonce
 
+    // 验证Nonce
+    if (!verifyNonce($nonce)) {
+        die('CSRF detection failed.');
+    }
     // 验证当前用户是否已登录
     if (!isset($_SESSION['userid'])) {
         die('You must be logged in to change your password');
@@ -138,6 +172,7 @@ if (isset($_POST['login'])) {
     }
     // 注销用户
     logoutUser();
+    $conn->close();
 }
-$conn->close();
+
 ?>
