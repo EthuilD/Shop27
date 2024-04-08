@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCategories();
     loadShoppingList();
 });
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     if (event.target.classList.contains('addToCart')) {
         // 尝试从最近的.product元素中获取产品信息
         const productElement = event.target.closest('.product');
@@ -28,6 +28,7 @@ document.addEventListener('click', function(event) {
         }
     }
 });
+
 // 获取类别列表并更新页面
 function updateCategories() {
     fetch('api/get_categories.php')
@@ -129,13 +130,13 @@ function addProductToList(pid, quantity) {
 
             // 更新数量的事件监听器
             const inputElement = productElement.querySelector('.item-quantity');
-            inputElement.addEventListener('change', function() {
+            inputElement.addEventListener('change', function () {
                 updateQuantity(pid, this.value);
             });
 
             // 移除商品的事件监听器
             const removeButton = productElement.querySelector('.remove-item');
-            removeButton.addEventListener('click', function() {
+            removeButton.addEventListener('click', function () {
                 removeProductFromList(pid);
             });
         });
@@ -169,6 +170,92 @@ function updateTotal() {
     });
     document.querySelector('.total-price').textContent = `Total: $${total.toFixed(2)}`;
 }
+// 更新购物车表单以包含商品详情
+function updateCartForm() {
+    const shoppingListElement = document.getElementById('shopping-list');
+    let idx = 1; // PayPal 要求项的索引从 1 开始
+    shoppingListElement.querySelectorAll('li').forEach(item => {
+        const pid = item.getAttribute('data-pid');
+        const name = item.querySelector('.item-name').textContent;
+        const quantity = item.querySelector('.item-quantity').value;
+        const price = item.querySelector('.item-price').textContent.replace('$', '');
+
+        // 创建隐藏的表单字段并添加到表单中
+        const form = document.getElementById('paypal-cart-form');
+        addHiddenInput(form, `item_name_${idx}`, name);
+        addHiddenInput(form, `quantity_${idx}`, quantity);
+        addHiddenInput(form, `amount_${idx}`, price);
+
+        idx++;
+    });
+}
+
+// 辅助函数：向表单添加隐藏的输入字段
+function addHiddenInput(form, name, value) {
+    let input = form.querySelector(`input[name="${name}"]`);
+    if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        form.appendChild(input);
+    }
+    input.value = value;
+}
+// 购物车表单提交
+document.querySelector('#paypal-cart-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // 阻止表单默认提交
+    updateCartForm(); // 更新购物车表单
+    // 收集购物车中的所有商品信息
+    const items = document.querySelectorAll('#shopping-list li');
+    const formData = {
+        items: []
+    };
+
+    items.forEach((item, index) => {
+        const pid = item.getAttribute('data-pid');
+        const quantity = item.querySelector('.item-quantity').value;
+        if (quantity > 0) {
+            formData.items.push({pid: pid, quantity: quantity});
+        }
+    });
+
+    // 通过AJAX向服务器传递产品ID和数量
+    fetch('api/create_order.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+        .then(response => response.json())
+        .then(data => {
+            // 服务器应该返回invoice和custom字段
+            if (data.invoice && data.custom) {
+                // 添加隐藏的invoice和custom字段到表单中
+                const invoiceInput = document.createElement('input');
+                invoiceInput.type = 'hidden';
+                invoiceInput.name = 'invoice';
+                invoiceInput.value = data.invoice;
+
+                const customInput = document.createElement('input');
+                customInput.type = 'hidden';
+                customInput.name = 'custom';
+                customInput.value = data.custom;
+
+                const form = document.getElementById('paypal-cart-form');
+                form.appendChild(invoiceInput);
+                form.appendChild(customInput);
+
+                // 清空客户端购物车
+                localStorage.removeItem('shoppingList');
+                document.getElementById('shopping-list').innerHTML = '';
+
+                // 程序化提交表单到PayPal
+                form.submit();
+            }
+        });
+});
+
 
 //以下为无限滚动代码，!整合到分页操作中
 let page = 0;
@@ -178,7 +265,7 @@ const endOfPageThreshold = window.innerHeight * 0.2; // 当用户滚动到距离
 //节流函数
 function throttle(func, limit) {
     let inThrottle; //跟踪节流状态，节流发生时为true
-    return function() {
+    return function () {
         const args = arguments;
         const context = this;
         if (!inThrottle) {  //不在节流状态时执行
@@ -188,6 +275,7 @@ function throttle(func, limit) {
         }
     }
 }
+
 const throttledScrollHandler = throttle(() => {
     if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - endOfPageThreshold) {
         loadMoreProducts();
@@ -227,13 +315,13 @@ function loadMoreProducts() {
             console.error('Error loading more products:', error);
         });
 }
-
+//商品详情页的tab菜单
 let tabs = document.querySelectorAll('.tab-list li');
 // 为每个 li 元素添加点击事件监听器
-tabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
+tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
         // 移除所有 tab 的 'current' 类
-        tabs.forEach(function(tab) {
+        tabs.forEach(function (tab) {
             tab.classList.remove('current');
         });
 
@@ -244,7 +332,7 @@ tabs.forEach(function(tab) {
         let desItems = document.querySelectorAll('.des-item');
 
         // 隐藏所有的 '.des-item' 元素
-        desItems.forEach(function(item) {
+        desItems.forEach(function (item) {
             item.style.display = 'none';
         });
 

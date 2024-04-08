@@ -396,3 +396,50 @@ button:hover {
     color: #ff0000;
     margin-bottom: 15px;
 }
+
+/*payment styles*/
+body.payment{
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+.container.payment{
+    background-color: #fff;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1.payment{
+    color: #333;
+}
+
+.message.payment{
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 20px 0;
+}
+
+.button.payment{
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #5cb85c;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.button.cancelled.payment{
+    background-color: #d9534f;
+}
+
+footer.payment{
+    margin-top: 30px;
+    color: #666;
+    font-size: 14px;
+}
