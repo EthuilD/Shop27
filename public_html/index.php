@@ -106,7 +106,6 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
 
 <footer>
     <p>1155197473 LIAN Jialu</p>
-    <a href="../admin/AdminPanel.php">Temporary administrator channel for test</a>
 </footer>
 
 <script src="myScript.js"></script>
