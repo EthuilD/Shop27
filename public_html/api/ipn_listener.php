@@ -140,15 +140,11 @@ if (strcmp($res, "VERIFIED") == 0) {
     $stmtUpdateOrder = $conn->prepare($sqlUpdateOrder);
     $stmtUpdateOrder->bind_param('si', $txn_id, $invoice);
 
-    if ($stmtUpdateOrder->execute()) {
-        // 订单状态成功更新为 'completed'
-        // 可能需要发送订单确认邮件等
-    } else {
+    if (!($stmtUpdateOrder->execute())) {
         // 更新失败，记录错误
         error_log("Failed to update order status: " . $stmtUpdateOrder->error);
     }
 
-    // Rest of the order validation and processing code
 } elseif (strcmp($res, "INVALID") == 0) {
     handleError("Received an invalid IPN message.", false);
 } else {
