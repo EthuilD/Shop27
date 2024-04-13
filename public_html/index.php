@@ -2,9 +2,11 @@
 <!--类别下没有商品时 点击该类别不会切换-->
 <?php
 require '../includes/dbconfig.php';
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 $limit = 8; // 每页显示的产品数量
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
+$username = $_SESSION['username'] ?? "guest";
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +33,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
         <div class="dropdown">
             <button class="dropbtn">Account</button>
             <div class="dropdown-content">
-                <button><a href="changePassword.php">Change Password</a></button>
+                <button><a href="memberPortal.php">Member Portal</a></button>
                 <form method="POST" action="api/auth-process.php">
                     <button type="submit" name="logout">&nbsp;&nbsp;Logout</button>
                 </form>
@@ -43,7 +45,6 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>
     <!-- Enclose the shopping list within a form element -->
-    <!--不要直接向PayPal发送表单！-->
     <form id="paypal-cart-form">
         <div class="shopping-list-details">
             <ul id="shopping-list"></ul>

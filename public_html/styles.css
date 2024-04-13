@@ -18,7 +18,8 @@ header {
     width: 100%;
     background-color: #f7f7f7;
     color: #333;
-    padding: 1rem 0;
+    padding: 0.6rem 0 0 0;
+    z-index: 1;
 }
 
 header h3 {
@@ -455,4 +456,92 @@ footer.payment{
     margin-top: 30px;
     color: #666;
     font-size: 14px;
+}
+/*会员门户部分*/
+#sidebar {
+    width: 200px;
+    position: fixed;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    top: 90px;
+    z-index: -1;
+}
+
+#main-content {
+    position: absolute;
+    top: 90px;
+    margin-left: 220px;
+    padding: 20px;
+}
+
+.content-section {
+}
+
+.user-info h2, .user-info p {
+    text-align: center;
+}
+
+ul.member {
+    list-style-type: none;
+    position: relative;
+    top: 5%;
+}
+ul.member li{
+    color: white;
+    display: block;
+    padding: 10px 0;
+}
+ul.member li:hover {
+    color: darkgray;
+    text-decoration: none;
+}
+ul.member li button {
+    background: none;
+    border: none;
+    width: 100%;
+}
+ul.member li button:hover {
+    color: darkgray;
+}
+
+.content-section .current{
+    background-color: #F08080;
+    color: white;
+}
+.content-section{
+    display: none;
+}
+
+#profile button a{
+    color: white;
+    text-decoration: none;
+}
+.orders {
+    display: grid;
+    gap: 20px;
+    z-index: -1;
+}
+
+.order {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.order-header, .product-header, .order-item {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 定义四列，每列占一份 */
+    gap: 10px;
+}
+
+.product-header {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 5px;
+}
+
+.order-item {
+    align-items: center;
+    padding: 5px;
 }

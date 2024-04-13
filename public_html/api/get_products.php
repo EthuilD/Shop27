@@ -4,7 +4,7 @@ require '../../includes/dbconfig.php';
 // 设置返回的内容类型为JSON
 header('Content-Type: application/json');
 
-$limit = 4; // 每页显示的产品数量
+$limit = 8; // 每页显示的产品数量
 $catid = isset($_GET['catid']) ? intval($_GET['catid']) : null;
 $pid = isset($_GET['pid']) ? intval($_GET['pid']) : null;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
