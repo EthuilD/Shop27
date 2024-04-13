@@ -194,7 +194,6 @@ document.querySelector('#paypal-cart-form').addEventListener('submit', function(
     }).then(response => response.json())
         .then(data => {
             if (data.url) {
-                console.log('Redirecting to PayPal:', data.url);
                 window.location.href = data.url; // 重定向到PayPal
                 // 清空客户端购物车
                 localStorage.removeItem('shoppingList');
@@ -288,3 +287,4 @@ tabs.forEach(function (tab) {
         desItems[index].style.display = 'block';
     });
 });
+
