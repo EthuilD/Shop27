@@ -31,13 +31,18 @@ if ($result && $result->num_rows > 0) {
 
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>
-    <div class="shopping-list-details">
-        <ul id="shopping-list"></ul>
-        <div class="checkout">
-            <span class="total-price">Total: $0.00</span>
-            <button class="checkout-button">Checkout</button>
+    <!-- Enclose the shopping list within a form element -->
+    <!--不要直接向PayPal发送表单！-->
+    <form id="paypal-cart-form">
+        <div class="shopping-list-details">
+            <ul id="shopping-list"></ul>
+            <div class="checkout">
+                <span class="total-price">Total: $0.00</span>
+                <!-- Checkout button of type submit -->
+                <button type="submit" class="checkout-button">Checkout via PayPal</button>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <header>

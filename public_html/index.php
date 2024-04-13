@@ -43,7 +43,8 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
 <div class="shopping-list-container">
     <div class="shopping-list-toggle">Shopping List</div>
     <!-- Enclose the shopping list within a form element -->
-    <form id="paypal-cart-form" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+    <!--不要直接向PayPal发送表单！-->
+    <form id="paypal-cart-form">
         <div class="shopping-list-details">
             <ul id="shopping-list"></ul>
             <div class="checkout">
@@ -52,17 +53,6 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : "guest";
                 <button type="submit" class="checkout-button">Checkout via PayPal</button>
             </div>
         </div>
-        <!-- Insert additional hidden fields required by PayPal -->
-        <input type="hidden" name="cmd" value="_cart">
-        <input type="hidden" name="upload" value="1">
-        <input type="hidden" name="business" value="sb-ntpge29911898@business.example.com">
-        <input type="hidden" name="charset" value="utf-8">
-        <input type="hidden" name="currency_code" value="HKD">
-        <!--上传到服务器后修改-->
-        <input type="hidden" name="return" value="https://secure.s27.iems5718.ie.cuhk.edu.hk/payment_success.html">
-        <input type="hidden" name="cancel_return" value="https://secure.s27.iems5718.ie.cuhk.edu.hk/payment_cancelled.html">
-        <input type="hidden" name="notify_url" value="https://secure.s27.iems5718.ie.cuhk.edu.hk/api/ipn_listener.php">
-        <!-- Fields for invoice and custom will be appended by JS -->
     </form>
 </div>
 
