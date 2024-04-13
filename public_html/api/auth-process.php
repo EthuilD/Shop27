@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // 生成并验证Nonce
 function generateNonce(): string
 {
@@ -53,11 +55,10 @@ function setAuthCookie() {
 function redirectToDashboard($isAdmin) {
     if ($isAdmin) {
         header('Location: ../../admin/AdminPanel.php');
-        exit();
     } else {
         header('Location: ../index.php');
-        exit();
     }
+    exit();
 }
 // 用户注销
 function logoutUser() {
@@ -76,6 +77,7 @@ function logoutUser() {
     header('Location: ../index.php');
     exit();
 }
+
 if (isset($_POST['login'])) {
     require '../../includes/dbconfig.php';
     $email = $_POST['email'];
@@ -173,6 +175,61 @@ if (isset($_POST['login'])) {
     // 注销用户
     logoutUser();
     $conn->close();
+}else if(isset($_POST['action']) && $_POST['action'] == 'get_orders'){
+    require '../../includes/dbconfig.php';
+    if (!isset($_SESSION['userid'])) {
+        echo json_encode(['error' => 'User not authenticated']);
+        exit;
+    }
+    $userid = $_SESSION['userid'];
+    header('Content-Type: application/json');
+    $query = "SELECT 
+        o.order_id, 
+        o.userid,
+        o.username, 
+        users.email,
+        o.created_at, 
+        o.total_price, 
+        o.status, 
+        p.pid, 
+        p.quantity, 
+        p.price,
+        prod.name AS product_name
+        FROM orders o 
+        JOIN order_items p ON o.order_id = p.order_id 
+        JOIN products prod ON p.pid = prod.pid
+        JOIN users ON o.userid = users.userid
+        WHERE o.userid = ?
+        ORDER BY o.created_at DESC, o.order_id, p.pid";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $userid);
+    $stmt->execute();
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+    } else {
+        echo json_encode(['error' => $conn->error]);
+        exit;
+    }
+    $orders = [];
+    $userinfo = [];
+    while ($row = $result->fetch_assoc()) {
+        $orders[$row['order_id']]['order_info'] = [
+            'userid' => $row['userid'],
+            'username' => $row['username'],
+            'created_at' => $row['created_at'],
+            'total_price' => $row['total_price'],
+            'status' => $row['status']
+        ];
+        $orders[$row['order_id']]['products'][] = [
+            'product_id' => $row['pid'],
+            'product_name' => $row['product_name'],
+            'quantity' => $row['quantity'],
+            'price' => $row['price']
+        ];
+        $userinfo = ['email' => $row['email'], 'userName' => $row['username']];
+    }
+
+    echo json_encode(['orders' => $orders, 'userinfo' => $userinfo]);
 }
 
 ?>
