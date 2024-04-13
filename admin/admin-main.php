@@ -51,7 +51,43 @@ function getProducts($conn) {
     }
     return $productsResult;
 }
-
+function fetchOrdersWithProducts($conn) {
+    $query = "SELECT 
+        o.order_id, 
+        o.userid,
+        o.username, 
+        o.created_at, 
+        o.total_price, 
+        o.status, 
+        p.pid, 
+        p.quantity, 
+        p.price,
+        prod.name AS product_name
+        FROM orders o 
+        JOIN order_items p ON o.order_id = p.order_id 
+        JOIN products prod ON p.pid = prod.pid
+        ORDER BY o.created_at DESC, o.order_id, p.pid";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $orders = [];
+    while ($row = $result->fetch_assoc()) {
+        $orders[$row['order_id']]['order_info'] = [
+            'userid' => $row['userid'],
+            'username' => $row['username'],
+            'created_at' => $row['created_at'],
+            'total_price' => $row['total_price'],
+            'status' => $row['status']
+        ];
+        $orders[$row['order_id']]['products'][] = [
+            'product_id' => $row['pid'],
+            'product_name' => $row['product_name'],
+            'quantity' => $row['quantity'],
+            'price' => $row['price']
+        ];
+    }
+    return $orders;
+}
 // 检查用户是否通过验证，如果没有，则重定向
 if (!isAuthenticated()) {
     redirectToLogin();
