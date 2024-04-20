@@ -200,6 +200,7 @@ if (isset($_POST['login'])) {
     }
     $orderQuery = "SELECT 
     o.order_id, 
+    o.username, 
     o.created_at, 
     o.total_price, 
     o.status, 
@@ -210,6 +211,7 @@ if (isset($_POST['login'])) {
     FROM orders o 
     JOIN order_items p ON o.order_id = p.order_id 
     JOIN products prod ON p.pid = prod.pid
+    JOIN users ON o.userid = users.userid
     WHERE o.userid = ?
     ORDER BY o.created_at DESC, o.order_id, p.pid";
 
@@ -222,6 +224,7 @@ if (isset($_POST['login'])) {
 
     while ($row = $orderResult->fetch_assoc()) {
         $orders[$row['order_id']]['order_info'] = [
+            'username' => $row['username'],
             'created_at' => $row['created_at'],
             'total_price' => $row['total_price'],
             'status' => $row['status']
