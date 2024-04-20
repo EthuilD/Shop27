@@ -14,5 +14,8 @@
 - admin: admin@example.com  adminpassword
 - normal user: user@example.com userpassword
 ## Phase 5
+- secure checkout flow via PayPal
 ## Phase 6
-- Supporting Secure Authentication with Google accounts 
+- Supporting Secure Authentication with Google accounts (Beta. Only my own Google account. Please use test accounts in Phase 4.)
+- Member portal for buyers
+- Supporting AJAX infinite scroll when browsing products in the main page(have finished earlier)
