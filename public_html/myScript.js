@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCategories();
     loadShoppingList();
 });
+
 document.addEventListener('click', function (event) {
     if (event.target.classList.contains('addToCart')) {
         // 尝试从最近的.product元素中获取产品信息

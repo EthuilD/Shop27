@@ -13,6 +13,7 @@ $userid = $_SESSION['userid'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Site</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="shop27.png" type="image/png">
 </head>
 <body id="member-portal">
 <div class="shopping-list-container">
