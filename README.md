@@ -13,3 +13,6 @@
 - Test accounts:
 - admin: admin@example.com  adminpassword
 - normal user: user@example.com userpassword
+## Phase 5
+## Phase 6
+- Supporting Secure Authentication with Google accounts 
