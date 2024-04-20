@@ -14,10 +14,14 @@ $username = $_SESSION['username'] ?? "guest";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="This is a shopping site">
     <title>Shopping Site</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="shop27.png" type="image/png">
 </head>
 <body>
+
+<script src="myScript.js" defer></script>
 
 <div class="user-info-container">
     <!-- 显示用户名或“guest” -->
@@ -29,6 +33,7 @@ $username = $_SESSION['username'] ?? "guest";
         <div class="log-button">
             <a href="login.php"><button>Login</button></a>
         </div>
+
     <?php else: ?>
         <div class="dropdown">
             <button class="dropbtn">Account</button>
@@ -98,8 +103,6 @@ $username = $_SESSION['username'] ?? "guest";
 <footer>
     <p>1155197473 LIAN Jialu</p>
 </footer>
-
-<script src="myScript.js"></script>
 
 </body>
 </html>

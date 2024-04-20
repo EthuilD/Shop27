@@ -9,9 +9,10 @@ $nonce = generateNonce();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="shop27.png" type="image/png">
 </head>
 <body>
-
+<script src="Login.js" defer></script>
 <div class="login-container">
     <div class="welcome-message">
         <h2>Welcome Back!</h2>
@@ -25,12 +26,13 @@ $nonce = generateNonce();
         <?php endif; ?>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
-
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
         <input type="hidden" name="nonce" value="<?php echo htmlspecialchars($nonce); ?>">
         <button type="submit" name="login">Login</button>
     </form>
+    <div id="signInButton"></div>
+    <script src="https://accounts.google.com/gsi/client" defer></script>
 </div>
 </body>
 </html>

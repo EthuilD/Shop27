@@ -93,13 +93,18 @@ if (isset($_POST['login'])) {
     validatePassword($password);
 
     // 准备查询
-    $stmt = $conn->prepare("SELECT userid, username, password, is_admin FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT userid, username, password, google_id, is_admin FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
+
+        // 检查是否有Google ID，如果有，则不允许使用传统方式登录
+        if (!empty($user['google_id'])) {
+            die('Please use Google to log in.');
+        }
 
         // 验证密码
         if (password_verify($password, $user['password'])) {
@@ -183,39 +188,40 @@ if (isset($_POST['login'])) {
     }
     $userid = $_SESSION['userid'];
     header('Content-Type: application/json');
-    $query = "SELECT 
-        o.order_id, 
-        o.userid,
-        o.username, 
-        users.email,
-        o.created_at, 
-        o.total_price, 
-        o.status, 
-        p.pid, 
-        p.quantity, 
-        p.price,
-        prod.name AS product_name
-        FROM orders o 
-        JOIN order_items p ON o.order_id = p.order_id 
-        JOIN products prod ON p.pid = prod.pid
-        JOIN users ON o.userid = users.userid
-        WHERE o.userid = ?
-        ORDER BY o.created_at DESC, o.order_id, p.pid";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $userid);
-    $stmt->execute();
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-    } else {
-        echo json_encode(['error' => $conn->error]);
-        exit;
-    }
-    $orders = [];
     $userinfo = [];
-    while ($row = $result->fetch_assoc()) {
+    $userQuery = "SELECT username, email FROM users WHERE userid = ?";
+    $userStmt = $conn->prepare($userQuery);
+    $userStmt->bind_param('i', $userid);
+    $userStmt->execute();
+    $userResult = $userStmt->get_result();
+
+    while ($row = $userResult->fetch_assoc()) {
+        $userinfo = ['email' => $row['email'], 'userName' => $row['username']];
+    }
+    $orderQuery = "SELECT 
+    o.order_id, 
+    o.created_at, 
+    o.total_price, 
+    o.status, 
+    p.pid, 
+    p.quantity, 
+    p.price,
+    prod.name AS product_name
+    FROM orders o 
+    JOIN order_items p ON o.order_id = p.order_id 
+    JOIN products prod ON p.pid = prod.pid
+    WHERE o.userid = ?
+    ORDER BY o.created_at DESC, o.order_id, p.pid";
+
+    $orderStmt = $conn->prepare($orderQuery);
+    $orderStmt->bind_param('i', $userid);
+    $orderStmt->execute();
+    $orderResult = $orderStmt->get_result();
+
+    $orders = [];
+
+    while ($row = $orderResult->fetch_assoc()) {
         $orders[$row['order_id']]['order_info'] = [
-            'userid' => $row['userid'],
-            'username' => $row['username'],
             'created_at' => $row['created_at'],
             'total_price' => $row['total_price'],
             'status' => $row['status']
@@ -226,10 +232,56 @@ if (isset($_POST['login'])) {
             'quantity' => $row['quantity'],
             'price' => $row['price']
         ];
-        $userinfo = ['email' => $row['email'], 'userName' => $row['username']];
     }
-
     echo json_encode(['orders' => $orders, 'userinfo' => $userinfo]);
+
+}else if(isset($_POST['action']) && $_POST['action'] == 'google_login'){
+    require '../../includes/dbconfig.php';
+    require_once '../../vendor/autoload.php'; // 确保您安装了Google API客户端库
+    $CLIENT_ID = '49074735272-2f27760hq276vqj6per693ja766bmm0g.apps.googleusercontent.com';
+    $client = new Google_Client(['client_id' => $CLIENT_ID]);
+    $id_token = $_POST['idtoken'];
+    $payload = $client->verifyIdToken($id_token);
+    header('Content-Type: application/json');
+
+    if ($payload) {
+        $google_id = $payload['sub'];
+        $username = $payload['name'];
+        $email = $payload['email'];
+
+        $stmt = $conn->prepare("SELECT userid, username, is_admin FROM users WHERE google_id = ?");
+        $stmt->bind_param("s", $google_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            session_regenerate_id(true);
+            setAuthCookie();
+            $_SESSION['userid'] = $user['userid'];
+            $_SESSION['username'] = $user['username'];
+            echo json_encode(['status' => 'success','redirect' => 'index.php']);
+        } else {
+            $is_admin = 0;
+            $stmt = $conn->prepare("INSERT INTO users (google_id, username, email, is_admin) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("sssi", $google_id, $username, $email, $is_admin);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                $user_id = $stmt->insert_id;
+                session_regenerate_id(true);
+                setAuthCookie();
+                $_SESSION['userid'] = $user_id;
+                $_SESSION['username'] = $username;
+                echo json_encode(['status' => 'success', 'redirect' => 'index.php']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => '新用户创建失败']);
+            }
+        }
+        $conn->close();
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Token verification failed']);
+    }
 }
 
 ?>

@@ -26,6 +26,7 @@ if ($result && $result->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product 1 - My Shopping Site</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="shop27.png" type="image/png">
 </head>
 <body>
 
